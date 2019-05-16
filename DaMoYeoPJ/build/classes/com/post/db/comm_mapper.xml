@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.post.comm_mapper">
+
+
+	<!-- board -->
+  <select id="selectList" resultType="boardDto" parameterType="int">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectTemaList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE BOARDNO=#{boardno} ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectWriterList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE MYID=#{searchtext} ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectAnsList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE BOARDSEQ IN (SELECT DISTINCT BOARDSEQ FROM ANSBOARD WHERE MYID = #{myid}) ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectTitleList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE TITLE LIKE '%'||#{searchtext}||'%' ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectTemaWriterList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE BOARDNO=#{boardno} AND MYID=#{searchtext} ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="selectTemaTitleList" resultType="boardDto" parameterType="hashmap">
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, R
+		FROM (SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR, ROWNUM R
+			  FROM (SELECT * FROM COMM_BOARD WHERE BOARDNO=#{boardno} AND TITLE LIKE '%'||#{searchtext}||'%' ORDER BY BOARDSEQ DESC)
+			  WHERE ROWNUM <= #{page}*10)
+		WHERE R > ((#{page}-1)*10)
+  	]]>
+  </select>
+  
+  <select id="getTemaCnt" resultType="int">
+  	SELECT COUNT(*) FROM COMM_BOARD WHERE BOARDNO=#{boardno}
+  </select>
+  
+  <select id="selectOne" resultType="boardDto" parameterType="int">
+  	SELECT BOARDSEQ, MYID, BOARDNO, TITLE, CONTENT, REGDATE, VISITCNT, ADDR FROM COMM_BOARD WHERE BOARDSEQ = #{boardseq}
+  </select>
+  
+  <select id="getCnt" resultType="int">
+  	SELECT COUNT(*) FROM COMM_BOARD
+  </select>
+  
+  <select id="getTitleCnt" resultType="int" parameterType="String">
+  	SELECT COUNT(*) FROM COMM_BOARD WHERE TITLE LIKE '%'||#{searchtext}||'%'
+  </select>
+  
+  <select id="getWriterCnt" resultType="int" parameterType="String">
+  	SELECT COUNT(*) FROM COMM_BOARD WHERE MYID=#{searchtext}
+  </select>
+  
+  <select id="getTemaTitleCnt" resultType="int" parameterType="hashmap">
+  	SELECT COUNT(*) FROM COMM_BOARD WHERE BOARDNO=#{boardno} AND TITLE LIKE '%'||#{searchtext}||'%'
+  </select>
+  
+  <select id="getTemaWriterCnt" resultType="int" parameterType="hashmap">
+  	SELECT COUNT(*) FROM COMM_BOARD WHERE BOARDNO=#{boardno} AND MYID=#{searchtext}
+  </select>
+  
+  <insert id="insertBoard" parameterType="boardDto" >
+  	INSERT INTO COMM_BOARD VALUES(COMM_BOARDSEQ.NEXTVAL, #{myid}, #{boardno}, #{title}, #{content}, SYSDATE, 0, #{addr})
+  </insert>
+  
+  <update id="updateVisit" parameterType="int">
+  	UPDATE COMM_BOARD SET VISITCNT = VISITCNT+1 WHERE BOARDSEQ = #{boardseq}
+  </update>
+  
+  <update id="updateVisits" parameterType="int">
+  	UPDATE COMM_BOARD SET VISITCNT = VISITCNT-1 WHERE BOARDSEQ = #{boardseq}
+  </update>
+  
+  <update id="updateBoard" parameterType="boardDto">
+  	UPDATE COMM_BOARD SET TITLE = #{title}, CONTENT = #{content} WHERE BOARDSEQ = #{boardseq}
+  </update>
+  
+  <delete id="deleteBoard" parameterType="int">
+  	DELETE FROM COMM_BOARD WHERE BOARDSEQ=#{boardseq}
+  </delete>
+  
+  <delete id="deleteBoardId" parameterType="String">
+  	DELETE FROM COMM_BOARD WHERE MYID=#{myid}
+  </delete>
+  
+  <!-- ans -->
+  
+  <select id="ansList" resultType="ansDto" parameterType="hashmap" >
+  	<![CDATA[
+		SELECT BOARDSEQ, MYID, ANSNO, GROUPNO, GROUPSQ, TTAB, ANSCONTENT, ANSREGDATE, R
+		FROM (SELECT BOARDSEQ, MYID, ANSNO, GROUPNO, GROUPSQ, TTAB, ANSCONTENT, ANSREGDATE, ROWNUM R
+			  FROM (SELECT * FROM ANSBOARD ORDER BY ANSNO ASC)
+			  WHERE BOARDSEQ=#{boardseq} AND ROWNUM <= #{pagecnt}*5)
+		WHERE R > ((#{pagecnt}-1)*5)
+  	]]>
+  </select>
+  
+  <select id="getAnsCnt" resultType="int" parameterType="int">
+  	SELECT COUNT(*) FROM ANSBOARD WHERE BOARDSEQ=#{boardseq}
+  </select>
+  
+  <select id="getWriterAnsCnt" resultType="int" parameterType="String">
+  	SELECT COUNT(*) FROM (SELECT DISTINCT BOARDSEQ FROM ANSBOARD WHERE MYID = #{myid})
+  </select>
+  
+  <insert id="ansinsert" parameterType="ansDto">
+  	INSERT INTO ANSBOARD VALUES(#{boardseq}, #{myid}, ANSBOARDSEQ.NEXTVAL, 0, 0, 0, #{anscontent}, SYSDATE)
+  </insert>
+  
+  <delete id="deleteAns" parameterType="int">
+  	DELETE FROM ANSBOARD WHERE ANSNO=#{ansno}
+  </delete>
+  
+  <delete id="deleteAnsId" parameterType="String">
+  	DELETE FROM ANSBOARD WHERE MYID=#{myid}
+  </delete>
+  
+  <delete id="deleteAnsAll" parameterType="int">
+  	DELETE FROM ANSBOARD WHERE BOARDSEQ=#{boardseq}
+  </delete>
+  
+  <!-- choice -->
+  
+  <select id="getGoodCnt" resultType="int" parameterType="int">
+  	SELECT COUNT(*) FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq} AND CHOICE='Y'
+  </select>
+  
+  <select id="getNotGoodCnt" resultType="int" parameterType="int">
+  	SELECT COUNT(*) FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq} AND CHOICE='N'
+  </select>
+  
+  <select id="checkChoice" resultType="String" parameterType="choiceDto">
+  	SELECT CHOICE FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq} AND MYID=#{myid}
+  </select>
+  
+  <select id="checkChoices" resultType="String" parameterType="hashmap">
+  	SELECT CHOICE FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq} AND MYID=#{myid}
+  </select>
+  
+  <insert id="firstChoice" parameterType="choiceDto">
+  	INSERT INTO CHOICEBOARD VALUES(#{boardseq}, #{myid}, #{choice})
+  </insert>
+  
+  <update id="nextChoice" parameterType="choiceDto">
+  	UPDATE CHOICEBOARD SET CHOICE=#{choice} WHERE BOARDSEQ=#{boardseq} AND MYID=#{myid}
+  </update>
+  
+  <delete id="deleteChoice" parameterType="choiceDto">
+  	DELETE FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq} AND MYID=#{myid}
+  </delete>
+  
+  <delete id="deleteChoiceId" parameterType="String">
+  	DELETE FROM CHOICEBOARD WHERE MYID=#{myid}
+  </delete>
+  
+  <delete id="deleteChoiceAll" parameterType="int">
+  	DELETE FROM CHOICEBOARD WHERE BOARDSEQ=#{boardseq}
+  </delete>
+  
+
+  
+</mapper>

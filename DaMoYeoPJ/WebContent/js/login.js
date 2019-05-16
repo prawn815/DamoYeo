@@ -1,0 +1,2 @@
+
+Kakao.Auth.setAccessToken(accessTokenFromServer);

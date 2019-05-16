@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.about.mapper">
+
+	<resultMap type="InfoBoardDto" id="myMap">
+		<result property="myno" column="MYNO"/>
+		<result property="boardno" column="BOARDNO"/>		
+		<result property="myname" column="MYNAME"/>
+		<result property="mytitle" column="MYTITLE"/>
+		<result property="mycontent" column="MYCONTENT"/>
+		<result property="addr" column="ADDR"/>		
+	</resultMap>
+	
+	<!-- paging -->
+	<select id="selectINFOBOARD" resultType="InfoBoardDto" parameterType="hashmap">
+	 	<![CDATA[
+		SELECT MYNO, MYNAME, MYTITLE, MYCONTENT, ADDR, R
+		FROM (SELECT MYNO, MYNAME, MYTITLE, MYCONTENT, ADDR, ROWNUM R
+			FROM(SELECT * FROM INFOBOARD WHERE BOARDNO = #{boardno} ORDER BY MYNO DESC)
+			WHERE ROWNUM <= #{page}*5)
+		WHERE R > (#{page}-1)*5
+		
+	]]>
+	</select>
+	
+	<!-- paging -->
+	<select id="selectBikeBOARD" resultType="BikeDto" parameterType="int">
+	 	<![CDATA[
+		SELECT CONTENT_ID, CONTENT_NM, NEW_ADDR, ADDR_GU, R
+		FROM (SELECT CONTENT_ID, CONTENT_NM, NEW_ADDR, ADDR_GU, ROWNUM R
+			FROM(SELECT * FROM BIKE_TB ORDER BY CONTENT_ID DESC)
+			WHERE ROWNUM <= #{page}*5)
+		WHERE R > (#{page}-1)*5
+		
+	]]>
+	</select>
+	
+	
+	
+	
+	<select id="selectOne" parameterType="int" resultMap="myMap">
+		SELECT MYNO, MYNAME, MYTITLE, MYCONTENT, ADDR FROM INFOBOARD
+		WHERE MYNO = #{myno}
+	</select>
+	
+	<select id="selectBoard" parameterType="int" resultMap="myMap">
+		SELECT MYNO, MYNAME, MYTITLE, MYCONTENT, ADDR FROM INFOBOARD
+		WHERE BOARDNO = #{boardno}
+	</select>
+	
+	
+	<insert id="insert" parameterType="InfoBoardDto">
+		INSERT INTO INFOBOARD
+		VALUES(MYSEQ.NEXTVAL,#{boardno},#{myname},#{mytitle},#{mycontent},SYSDATE)
+	</insert>
+	
+	<insert id="insertbike" parameterType="BikeDto">
+		INSERT INTO BIKE_TB
+		VALUES(#{content_id}, #{addr_gu}, #{new_addr}, #{content_nm})
+	</insert>
+	
+	<delete id="delete" parameterType="int">
+		DELETE FROM INFOBOARD WHERE MYNO = #{myno}
+	</delete>
+	
+	<update id="update" parameterType="InfoBoardDto">
+		UPDATE INFOBOARD SET MYTITLE=#{mytitle}, MYCONTENT=#{mycontent} WHERE MYNO = #{myno}
+	</update>
+	
+	
+	
+	
+  
+</mapper>

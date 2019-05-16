@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.cal.mapper">
+	<resultMap type="LoginBoardDto" id="LoginBoardMap">
+		<result property="myid" column="MYID"/>
+		<result property="mypw" column="MYPW"/>	
+		<result property="myname" column="MYNAME"/>	
+		<result property="mygender" column="MYGENDER"/>	
+		<result property="mybirthday" column="MYBIRTHDAY"/>	
+		<result property="myaddr" column="MYADDR"/>	
+		<result property="myphone" column="MYPHONE"/>	
+		<result property="myemail" column="MYEMAIL"/>	
+		<result property="myenabled" column="MYENABLED"/>	
+		<result property="myrole" column="MYROLE"/>	
+	</resultMap>
+	<resultMap type="CalorieDto" id="FoodMap">
+		<result property="foodno" column="FOODNO"/>
+		<result property="foodgroup" column="FOOD_GROUP"/>
+		<result property="foodname" column="FOODNAME"/>
+		<result property="servingsize" column="SERVINGSIZE"/>
+		<result property="foodcalorie" column="CALORIE"/>
+	</resultMap>
+	<resultMap type="CalorieDto" id="ExMap">
+		<result property="exno" column="EXNO"/>
+		<result property="exname" column="EXNAME"/>
+		<result property="common" column="COMMON"/>
+		<result property="consumed_calorie" column="CONSUMED_CALORIE"/>
+	</resultMap>
+	<resultMap type="DiaryDto" id="DiaryMap">
+		<result property="mdate" column="MDATE"/>
+		<result property="myno" column="MYNO"/>
+		<result property="totalcal" column="TOTALCAL"/>
+		<result property="totalmeta" column="TOTALMETA"/>
+		<result property="regdate" column="REGDATE"/>
+	</resultMap>
+	<resultMap type="InbodyDto" id="InbodyMap">
+		<result property="myid" column="MYID"/>
+		<result property="weight" column="WEIGHT"/>
+		<result property="height" column="HEIGHT"/>
+		<result property="bmi" column="BMI"/>
+		<result property="metabolism" column="METABOLISM"/>
+	</resultMap>
+ <select id="selectMyid" parameterType="String" resultMap="LoginBoardMap">
+ 	SELECT MYID, MYPW, MYNAME, MYGENDER, MYBIRTHDAY, MYADDR, MYPHONE, MYEMAIL, MYENABLED, MYROLE FROM LOGINBOARD WHERE MYID = #{myid}
+ </select>
+
+  <select id="selectFoodCalorie" parameterType="String" resultMap="FoodMap">
+  	SELECT FOODNO, FOOD_GROUP, FOODNAME, SERVINGSIZE, CALORIE FROM FOODCALORIE WHERE FOODNAME LIKE '%'||#{foodname}||'%' ORDER BY FOODNO
+  </select>
+  <select id="selectExCalorie" parameterType="String" resultMap="ExMap">
+  	SELECT EXNO, EXNAME, COMMON, CONSUMED_CALORIE FROM EXCALORIE WHERE EXNAME LIKE '%'||#{exname}||'%' ORDER BY EXNO
+  </select>
+  <insert id="insertInbody" parameterType="InbodyDto" >
+  	INSERT INTO INBODY VALUES(#{myid}, null, null, null, null)
+  </insert>
+  <update id="updateInbody" parameterType="InbodyDto">
+  	UPDATE INBODY SET WEIGHT = #{weight}, HEIGHT = #{height}, BMI = #{bmi}, METABOLISM = #{metabolism} WHERE MYID = #{myid}
+  </update>
+  <select id="selectInbodyAll" resultType="InbodyDto">
+  	SELECT MYID, WEIGHT, HEIGHT, BMI, METABOLISM FROM INBODY
+  </select>
+  <select id="selectInbodyMyid" parameterType="String" resultType="InbodyDto">
+  	SELECT MYID, WEIGHT, HEIGHT, BMI, METABOLISM FROM INBODY WHERE MYID = #{myid}
+  </select>
+  <delete id="deleteInbody" parameterType="String">
+  	DELETE FROM INBODY WHERE MYID = #{myid}
+  </delete>
+  <insert id="insertDiary" parameterType="DiaryDto">
+  	INSERT INTO CALORIEDIARY VALUES(#{mdate}, #{myid}, #{totalcal}, #{totalmeta}, SYSDATE)
+  </insert>
+  <update id="updateDiary" parameterType="DiaryDto">
+  	UPDATE CALORIEDIARY SET TOTALCAL = #{totalcal}, TOTALMETA = #{totalmeta} WHERE MDATE = #{mdate} AND MYID = #{myid} 
+  </update>
+  <select id="selectDiaryOne" parameterType="DiaryDto" resultType="DiaryDto">
+  	SELECT MDATE, MYID, TOTALCAL, TOTALMETA, REGDATE FROM CALORIEDIARY WHERE MDATE = #{mdate} AND MYID = #{myid}
+  </select>
+  <select id="selectDiaryAll" parameterType="String" resultType="DiaryDto">
+  	SELECT MDATE, MYID, TOTALCAL, TOTALMETA, REGDATE FROM CALORIEDIARY WHERE MYID = #{myid}
+  </select>
+  <delete id="deleteDiary" parameterType="DiaryDto">
+  	DELETE FROM CALORIEDIARY WHERE MDATE = #{mdate} AND MYID = #{myid}
+  </delete>
+  <delete id="deleteDiaryMyid" parameterType="String">
+  	DELETE FROM CALORIEDIARY WHERE MYID = #{myid}
+  </delete>
+</mapper>

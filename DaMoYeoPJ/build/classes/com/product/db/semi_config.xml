@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd" >
+<configuration>
+	<properties resource="com/product/db/db.properties"></properties>
+	
+	<typeAliases>
+		<typeAlias type="com.product.dto.ProductDto" alias="ProductDto"/>
+		<typeAlias type="com.product.dto.BasketDto" alias="BasketDto"/>
+		<typeAlias type="com.product.dto.ReviewDto" alias="ReviewDto"/>
+		<typeAlias type="com.product.dto.SaleorderDto" alias="SaleorderDto"/>
+	</typeAliases>
+	
+	  <environments default="development">
+    <environment id="development">
+      <transactionManager type="JDBC"/>
+      <dataSource type="POOLED">
+        <property name="driver" value="${driver}"/>
+        <property name="url" value="${url}"/>
+        <property name="username" value="${username}"/>
+        <property name="password" value="${password}"/>
+      </dataSource>
+    </environment>
+  </environments>
+  
+  <mappers>
+  	<mapper resource="com/product/db/semi_mapper.xml"/>
+  </mappers>
+
+</configuration>
+
+

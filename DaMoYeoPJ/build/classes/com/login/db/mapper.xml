@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.login.mapper">
+  
+  <resultMap type="LoginDto" id="myMap">
+  	<result property="myid" column="MYID"/>
+  	<result property="mypw" column="MYPW"/>
+  	<result property="myname" column="MYNAME"/>
+  	<result property="mygender" column="MYGENDER"/>
+  	<result property="mybirthday" column="MYBIRTHDAY"/>
+  	<result property="myaddr" column="MYADDR"/>
+  	<result property="myphone" column="MYPHONE"/>
+  	<result property="myemail" column="MYEMAIL"/>
+  	<result property="myenabled" column="MYENABLED"/>
+  	<result property="myrole" column="MYROLE"/>
+  </resultMap>
+  
+  <select id="selectAll" resultType="LoginDto">
+  	SELECT MYID, MYPW, MYNAME, MYGENDER, MYBIRTHDAY, MYADDR, MYPHONE, MYEMAIL, MYENABLED, MYROLE FROM LOGINBOARD
+  </select>
+  
+  <select id="idchk" parameterType="LoginDto" resultMap="myMap">
+  	SELECT MYID, MYPW, MYNAME, MYGENDER, MYBIRTHDAY, MYADDR, MYPHONE, MYEMAIL, MYENABLED, MYROLE FROM LOGINBOARD WHERE MYID =#{myid}
+  </select>
+  
+  <select id="login" parameterType="LoginDto" resultMap="myMap">
+  	SELECT MYID, MYPW, MYNAME, MYGENDER, MYBIRTHDAY, MYADDR, MYPHONE, MYEMAIL, MYENABLED, MYROLE FROM LOGINBOARD WHERE MYID =#{myid} AND MYPW =#{mypw}
+  </select>
+  
+  <select id="idpassfind" parameterType="LoginDto" resultMap="myMap">
+  	SELECT MYID, MYPW, MYNAME, MYGENDER, MYBIRTHDAY, MYADDR, MYPHONE, MYEMAIL, MYENABLED, MYROLE FROM LOGINBOARD WHERE MYNAME =#{myname} AND MYPHONE =#{myphone} AND MYBIRTHDAY =#{mybirthday}
+  </select>
+  
+  <insert id="insert" parameterType="LoginDto">
+ 	 INSERT INTO LOGINBOARD VALUES(#{myid},#{mypw},#{myname},#{mygender},#{mybirthday},#{myaddr},#{myphone},#{myemail},'Y','USER')
+  </insert>
+  
+  <insert id="kakaoinsert" parameterType="LoginDto">
+  	 INSERT INTO LOGINBOARD VALUES(#{myid },#{mypw },#{myname, jdbcType=VARCHAR},#{mygender, jdbcType=VARCHAR},#{mybirthday ,jdbcType=INTEGER},#{myaddr, jdbcType=VARCHAR},#{myphone, jdbcType=VARCHAR},#{myemail, jdbcType=VARCHAR},'Y','USER')
+  </insert>
+  
+  <update id="userupdate" parameterType="LoginDto">
+  	UPDATE LOGINBOARD SET MYPW =#{mypw }, MYADDR =#{myaddr}, MYPHONE =#{myphone}, MYEMAIL =#{myemail} WHERE MYID =#{myid }
+  </update>
+  
+  <delete id="userdelete" parameterType="LoginDto">
+  	DELETE FROM LOGINBOARD WHERE MYID =#{myid }
+  </delete>
+  
+  <update id="updateGenBirth" parameterType="LoginDto">
+   UPDATE LOGINBOARD SET MYGENDER = #{mygender}, MYBIRTHDAY = #{mybirthday} WHERE MYID = #{myid}
+  </update>
+  
+  
+</mapper>

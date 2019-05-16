@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+	<mapper namespace="com.product.db.mapper">
+	
+	<select id="selectAll" resultType="ProductDto">
+		SELECT PID, PNAME, PPRICE, DESCRIPTION, PCOMPANY
+		FROM PRODUCT
+		ORDER BY PID ASC
+	</select>
+	
+	<select id="selectOne" parameterType="int" resultType="ProductDto">
+		SELECT PID, PNAME, PPRICE, DESCRIPTION, PCOMPANY
+		FROM PRODUCT
+		WHERE PID = #{pid}
+	</select>
+	
+	<insert id="insertBas" parameterType="BasketDto">
+		INSERT INTO BASKET VALUES(BASKET_SEQ.NEXTVAL, #{myid}, #{pname}, #{pid}, #{price}, #{amount})
+	</insert>
+
+	<delete id="muldelBas" parameterType="map">
+		DELETE FROM BASKET WHERE BASKET_SEQ IN
+		<foreach collection="basket_seq" item="basket_seq" open="(" close=")" separator=",">
+			#{basket_seq}
+		</foreach>
+	</delete>
+		
+	<select id="BasketAll" parameterType="String" resultType="BasketDto">
+		SELECT BASKET_SEQ, MYID, PNAME, PID, PRICE, AMOUNT
+		FROM BASKET
+		WHERE MYID = #{myid}
+	</select>
+	
+	<select id="BasketSelect" parameterType="map" resultType="BasketDto">
+		SELECT BASKET_SEQ, MYID, PNAME, PID, PRICE, AMOUNT
+		FROM BASKET
+		WHERE BASKET_SEQ IN
+		<foreach collection="basket_seq" item="basket_seq" open="(" close=")" separator=",">
+			#{basket_seq}
+		</foreach>
+	</select>
+	
+	<select id="sumBas0" parameterType="BasketDto" resultType="int">
+		SELECT SUM(PRICE)
+		FROM BASKET
+		WHERE MYID = #{myid}
+	</select>
+	
+	<select id="sumBas" parameterType="map" resultType="int">
+		SELECT SUM(PRICE)
+		FROM BASKET
+		WHERE BASKET_SEQ IN
+		<foreach collection="basket_seq" item="basket_seq" open="(" close=")" separator=",">
+			#{basket_seq}
+		</foreach>
+	</select>
+	
+	<select id="OrderAll" resultType="SaleorderDto">
+		SELECT ORDER_ID, PID, PNAME, MYID, ADDR, AMOUNT, PRICE, ORDER_DATE, ORDER_STATE
+		FROM SALEORDER
+	</select>
+	
+	<select id="selectOrder" parameterType="String" resultType="SaleorderDto">
+		SELECT ORDER_ID, PID, PNAME, MYID, ADDR, AMOUNT, PRICE, ORDER_DATE, ORDER_STATE
+		FROM SALEORDER	
+		WHERE MYID = #{myid}
+		ORDER BY ORDER_ID DESC
+	</select>
+	
+	
+	
+	<select id="selOneOrder" parameterType="int" resultType="SaleorderDto">
+		SELECT ORDER_ID, PID, PNAME, MYID, ADDR, AMOUNT, PRICE, ORDER_DATE, ORDER_STATE
+		FROM SALEORDER
+		WHERE ORDER_ID = #{order_id}	
+	
+	</select>
+	
+	<select id="AdminAll" resultType="SaleorderDto">
+		SELECT ORDER_ID, PID, PNAME, MYID, ADDR, AMOUNT, PRICE, ORDER_DATE, ORDER_STATE
+		FROM SALEORDER ORDER BY ORDER_ID DESC
+	</select>
+	
+ 	<insert id="insertOrder" parameterType="SaleorderDto"> 
+		INSERT INTO SALEORDER VALUES(ORDER_ID.NEXTVAL,#{pid},#{pname},#{myid},#{addr},#{amount},#{price},SYSDATE,#{order_state})
+	</insert> 
+
+	
+	
+	<select id="selContSQL" parameterType="int" resultType="int">
+		SELECT COUNT(*) TOTAL FROM REVIEW WHERE PID = #{pid}
+	</select>
+	
+	<select id="selectSQL" parameterType="map" resultType="ReviewDto">
+		SELECT * 
+		FROM(SELECT ROWNUM AS RNUM, a.* 
+			 FROM REVIEW a 
+			 WHERE PID = #{pid}
+			 ORDER BY R_NO ASC) 
+		WHERE RNUM BETWEEN #{one} AND #{two}
+	</select>
+	
+	<select id="detailReview" parameterType="int" resultType="ReviewDto">
+		SELECT R_NO, PID, R_STAR, R_WRITER, R_TITLE, R_CONTENT, R_IMG, R_DATE
+		FROM REVIEW
+		WHERE R_NO = #{r_no}
+	</select>
+	
+	<insert id="insertReview" parameterType="ReviewDto">
+		INSERT INTO REVIEW VALUES(R_NO.NEXTVAL,#{pid},#{r_star},#{r_writer},#{r_title},#{r_content},#{r_img},SYSDATE)
+	</insert>
+	
+	
+	
+	
+	</mapper>
